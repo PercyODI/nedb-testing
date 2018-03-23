@@ -12,6 +12,7 @@
         "noImplicitThis": true,
         "noUnusedParameters": true,
         "importHelpers": true,
+        "experimentalDecorators": true,
         "noEmitHelpers": true,
         "module": "commonjs",
         "moduleResolution": "node",
