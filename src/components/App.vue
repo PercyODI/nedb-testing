@@ -21,7 +21,7 @@
         isNullOrUndefined
     } from 'util';
     import { remote } from "electron";
-    // import {PDFJSStatic, PDFJSUtilStatic} from "pdfjs-dist";
+    import {PDFJSStatic, PDFJSUtilStatic} from "pdfjs-dist";
 
     // declare var PDFJS: PDFJSStatic
 
@@ -29,7 +29,7 @@
         name: "App"
     })
     export default class App extends Vue {
-        pdfjsLib: any = window['pdfjs-dist/build/pdf'];
+        pdfjsLib: PDFJSStatic = window['pdfjs-dist/build/pdf'];
         db: nedb | null = null;
         showText: string = "Nothing Yet";
         docOne = {
@@ -63,11 +63,16 @@
                 ]
             },
             directoryPath => {
-                this.pdfjsLib.GlobalWorkerOptions.workerSrc = "../../node_modules/pdfjs-dist/build/pdf.worker.js";
+                // this.pdfjsLib.GlobalWorkerOptions.workerSrc = "../../node_modules/pdfjs-dist/build/pdf.worker.js";
                 console.log(this.pdfjsLib);
                 this.pdfjsLib.getDocument(directoryPath[0])
                     .then(pdf => {
-                        alert(`Found ${pdf.numPages} pages`)
+                        alert(`Found ${pdf.numPages} pages`);
+                        let startTime = new Date();
+                        for(let i = 1; i <= pdf.numPages; i++){
+                            pdf.getPage(i);
+                        }
+                        alert(`Took --Some Time--`)
                     });
             });
 
