@@ -1,6 +1,7 @@
 import {app, BrowserWindow} from 'electron'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import {enableLiveReload} from 'electron-compile'
+import {ipcMain} from 'electron'
 
 const isDevMode = process.execPath.match(/[\\/]electron/)
 if (isDevMode) {
@@ -23,6 +24,14 @@ const createWindow = async () => {
 
     window.on('closed', () => {
         window = null
+    })
+
+    ipcMain.on('testStart', (event, message) => {
+        let newWindow = new BrowserWindow()
+        newWindow.loadURL(`file://${__dirname}/pdfProcessing/index.html`)
+        newWindow.webContents.on("did-finish-load", () => {
+            newWindow.webContents.send("test", "This is a Test Message")
+          })
     })
 }
 
