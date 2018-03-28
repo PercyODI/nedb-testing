@@ -60,7 +60,16 @@ export default class App extends Vue {
   openFile() {
     if (isNullOrUndefined(this.db)) return;
     console.log("sending");
+    remote.dialog.showOpenDialog(
+      {
+        properties: ["openFile"],
+        filters: [{ name: "PDFs", extensions: ["pdf"] }]
+      },
+      directoryPath => {
+
     ipcRenderer.send("testStart", "Starting!")
+    
+      });
   }
 
   mounted() {
