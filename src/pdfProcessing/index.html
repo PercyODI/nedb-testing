@@ -9,6 +9,13 @@
 </head>
 <body>
     Nothing to see here
-    <script src="main.ts"></script>
+    <canvas id="myCanvas"/>
+    <script>
+        // THIS IS ALL IT TOOK TO GET THE MODULE.EXPORTS ISSUE TO DISSAPEAR! I'M A LITTLE ANGRY ARGH!
+        window.exports = module.exports
+    </script>
+    
+    <script src="../../node_modules/pdfjs-dist/build/pdf.js" ></script>
+    <script src="pdfMain.ts"></script>
 </body>
 </html>
