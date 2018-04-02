@@ -60,8 +60,8 @@ export default class App extends Vue {
   openFile() {
     if (isNullOrUndefined(this.db)) return
     console.log('sending')
-    ipcRenderer.on("pdfCanvas", (event, canvas: HTMLCanvasElement) => {
-      console.log(canvas);
+    ipcRenderer.on('pdfCanvas', (event, canvas: HTMLCanvasElement) => {
+      console.log(canvas)
       this.canvasElem = canvas
     })
     remote.dialog.showOpenDialog(
@@ -70,11 +70,12 @@ export default class App extends Vue {
         filters: [{ name: 'PDFs', extensions: ['pdf'] }]
       },
       directoryPath => {
-        ipcRenderer.on("windowReady", (event) => {
-          console.log("Received windowReady. Sending " + directoryPath[0])
-          ipcRenderer.send("loadPdf", directoryPath[0])
+        console.log('Received windowReady. Sending ' + directoryPath[0])
+        ipcRenderer.send('asyncMessage', {
+          ipcName: 'loadPdf',
+          message: directoryPath[0]
         })
-        ipcRenderer.send('testStart')
+        // ipcRenderer.send('testStart')
       }
     )
   }

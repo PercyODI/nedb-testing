@@ -11,7 +11,7 @@ import * as pdfjsLib from '../../node_modules/pdfjs-dist/build/pdf.js' //Ignore 
 let PDFJS: PDFJSStatic = pdfjsLib
 PDFJS.disableTextLayer = true
 PDFJS.disableWorker = true
-;(PDFJS as any).GlobalWorkerOptions.workerSrc =
+; (PDFJS as any).GlobalWorkerOptions.workerSrc =
     '../../node_modules/pdfjs-dist/build/pdf.worker.js'
 
 ipcRenderer.on('test', (event, message) => {
@@ -45,9 +45,12 @@ function renderPage(pdf: PDFDocumentProxy, pageNum: number) {
         }
         page.render(renderContext).then(() => {
             const canvasDataStr = canvas.toDataURL()
-            ipcRenderer.send('pdfCanvas', canvasDataStr)
+            sendIpcMessage('pdfCanvas', canvasDataStr)
         })
     })
 }
 
+function sendIpcMessage(ipcName: string, message: any) {
+    ipcRenderer.send('asyncMessage', {ipcName, message})
+}
 console.log('script processed')

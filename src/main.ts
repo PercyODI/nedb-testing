@@ -11,6 +11,7 @@ if (isDevMode) {
 
 let window: Electron.BrowserWindow | null
 let newWindow: Electron.BrowserWindow | null
+let allWindows: Electron.BrowserWindow[] = []
 
 const createWindow = async () => {
     window = new BrowserWindow({
@@ -23,33 +24,28 @@ const createWindow = async () => {
         await installExtension(VUEJS_DEVTOOLS)
         window.webContents.openDevTools({ mode: 'bottom' })
     }
+    allWindows.push(window)
+
+    newWindow = new BrowserWindow()
+    newWindow.loadURL(`file://${__dirname}/pdfProcessing/index.html`)
+    allWindows.push(newWindow)
 
     window.on('closed', () => {
+        allWindows = allWindows.filter(win => window != null && win.id != window.id)
         window = null
     })
-    ipcMain.on('loadPdf', (event, message) => {
-        if (!isNullOrUndefined(newWindow)) {
-            console.log('sending to newWindow')
-            newWindow.webContents.send('loadPdf', message)
-        }
+    newWindow.on('closed', () => {
+        allWindows = allWindows.filter(win => newWindow != null && win.id != newWindow.id)
+        newWindow = null
     })
-    ipcMain.on('testStart', (event, message) => {
-        newWindow = new BrowserWindow()
-        newWindow.loadURL(`file://${__dirname}/pdfProcessing/index.html`)
-        newWindow.on('closed', () => {
-            newWindow = null
-        })
-        newWindow.webContents.on('did-finish-load', () => {
-            if (!isNullOrUndefined(window)) {
-                window.webContents.send('windowReady')
-            }
-        })
-        ipcMain.on('pdfCanvas', (event, canvas: HTMLCanvasElement) => {
-            if (!isNullOrUndefined(window)) {
-                window.webContents.send('pdfCanvas', canvas)
-            }
+
+    ipcMain.on('asyncMessage', (event, ipcMessage: {ipcName: string, message: any}) => {
+        console.log(`Sending Message ${ipcMessage.ipcName} to ${allWindows.map(win => win.id)}`)
+        allWindows.forEach(win => {
+            win.webContents.send(ipcMessage.ipcName, ipcMessage.message)
         })
     })
+
 }
 
 app.on('ready', createWindow)
